@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AutoTap Pro</string>
+    <string name="accessibility_description">Permite simular toques en otras aplicaciones.</string>
+</resources>
