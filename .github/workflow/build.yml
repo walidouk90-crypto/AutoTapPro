@@ -1,0 +1,53 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # El proyecto no incluye gradlew/gradle-wrapper.jar, así que usamos
+      # setup-gradle para instalar y cachear Gradle directamente (sin depender
+      # del wrapper) y ejecutamos los comandos con `gradle` en vez de `./gradlew`.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.4' # compatible con Android Gradle Plugin 8.2.0 (ver build.gradle)
+
+      - name: Grant execute permission (por si se añade el wrapper en el futuro)
+        if: hashFiles('gradlew') != ''
+        run: chmod +x gradlew
+
+      - name: Lint
+        run: gradle lint --stacktrace
+
+      - name: Build debug APK
+        run: gradle assembleDebug --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: autoclicker-fix-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
