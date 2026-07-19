@@ -1,4 +1,4 @@
-name: Android CI
+name: Autotap_fixed
 
 on:
   push:
