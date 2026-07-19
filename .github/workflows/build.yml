@@ -20,7 +20,6 @@ jobs:
             echo "Descomprimiendo $zipfile..."
             unzip -o "$zipfile" -d .
             # Si el ZIP creó una carpeta con el nombre del proyecto, mueve su contenido a la raíz
-            # Posibles nombres de carpeta: AutoTAppPro, AutoTapPro, etc.
             for dir in AutoTAppPro AutoTapPro; do
               if [ -d "$dir" ]; then
                 echo "Moviendo contenido de $dir a la raíz..."
@@ -47,11 +46,11 @@ jobs:
       with:
         gradle-version: 8.5
 
-    - name: Compilar APK de Release
-      run: gradle assembleRelease
+    - name: Compilar APK de Debug
+      run: gradle assembleDebug
 
     - name: Subir APK como artefacto
       uses: actions/upload-artifact@v4
       with:
-        name: AutoTAppPro-APK
-        path: app/build/outputs/apk/release/*.apk
+        name: AutoTAppPro-Debug-APK
+        path: app/build/outputs/apk/debug/*.apk
