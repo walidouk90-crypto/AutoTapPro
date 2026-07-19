@@ -12,6 +12,27 @@ jobs:
     - name: Clonar el código
       uses: actions/checkout@v4
 
+    - name: Descomprimir el proyecto (si se subió como ZIP)
+      run: |
+        # Busca cualquier archivo .zip en la raíz y lo descomprime
+        for zipfile in *.zip; do
+          if [ -f "$zipfile" ]; then
+            echo "Descomprimiendo $zipfile..."
+            unzip -o "$zipfile" -d .
+            # Si el ZIP creó una carpeta con el nombre del proyecto, mueve su contenido a la raíz
+            # Posibles nombres de carpeta: AutoTAppPro, AutoTapPro, etc.
+            for dir in AutoTAppPro AutoTapPro; do
+              if [ -d "$dir" ]; then
+                echo "Moviendo contenido de $dir a la raíz..."
+                mv "$dir"/* . 2>/dev/null || true
+                rm -rf "$dir"
+              fi
+            done
+          fi
+        done
+        echo "Contenido después de descomprimir:"
+        ls -la
+
     - name: Instalar Java 17
       uses: actions/setup-java@v4
       with:
